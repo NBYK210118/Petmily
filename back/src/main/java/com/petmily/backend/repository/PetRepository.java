@@ -1,0 +1,17 @@
+package com.petmily.backend.repository;
+
+import com.petmily.backend.entity.Pet;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface PetRepository extends JpaRepository<Pet, Long> {
+    
+    List<Pet> findByUserId(Long userId);
+    
+    List<Pet> findBySpecies(String species);
+    
+    List<Pet> findByUserIdAndSpecies(Long userId, String species);
+}

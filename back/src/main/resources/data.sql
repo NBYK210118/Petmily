@@ -1,0 +1,32 @@
+-- -- 카테고리 데이터 삽입
+-- INSERT INTO categories (name, description, image_url, is_active, created_at, updated_at) VALUES
+-- ('사료', '반려동물 사료 및 간식', '/images/categories/food.jpg', true, NOW(), NOW()),
+-- ('장난감', '반려동물 장난감 및 놀이용품', '/images/categories/toys.jpg', true, NOW(), NOW()),
+-- ('용품', '목줄, 리드, 하우스 등 생활용품', '/images/categories/accessories.jpg', true, NOW(), NOW()),
+-- ('이동용품', '캐리어, 이동용품', '/images/categories/carriers.jpg', true, NOW(), NOW()),
+-- ('침구', '침대, 매트, 쿠션', '/images/categories/bedding.jpg', true, NOW(), NOW()),
+-- ('위생용품', '샴푸, 브러시, 청소용품', '/images/categories/hygiene.jpg', true, NOW(), NOW());
+
+-- -- 테스트 사용자 데이터 삽입
+-- INSERT INTO users (username, email, password, name, phone, address, role, is_active, created_at, updated_at) VALUES
+-- ('test@example.com', 'test@example.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDi', '테스트 사용자', '010-1234-5678', '서울시 강남구', 'USER', true, NOW(), NOW()),
+-- ('admin@example.com', 'admin@example.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDi', '관리자', '010-9876-5432', '서울시 서초구', 'ADMIN', true, NOW(), NOW());
+
+-- -- 상품 데이터 삽입
+-- INSERT INTO products (name, description, price, original_price, discount_rate, image_url, stock, category_id, created_at, updated_at) VALUES
+-- ('프리미엄 강아지 사료 5kg', '영양가 높은 천연 재료로 만든 프리미엄 강아지 사료입니다. 모든 연령대의 강아지에게 적합합니다.', 45000.0, 60000.0, 25, '/images/products/dog-food-premium.jpg', 15, (SELECT id FROM categories WHERE name='사료'), NOW(), NOW()),
+-- ('고양이 장난감 세트', '다양한 질감과 소리로 고양이의 호기심을 자극하는 장난감 세트입니다.', 25000.0, 35000.0, 29, '/images/products/cat-toys-set.jpg', 8, (SELECT id FROM categories WHERE name='장난감'), NOW(), NOW()),
+-- ('강아지 목줄과 리드', '편안하고 안전한 강아지 산책용 목줄과 리드 세트입니다.', 18000.0, NULL, NULL, '/images/products/dog-leash-set.jpg', 12, (SELECT id FROM categories WHERE name='액세서리'), NOW(), NOW()),
+-- ('고양이 캐리어 백', '안전하고 편안한 고양이 이동용 캐리어 백입니다.', 55000.0, 70000.0, 21, '/images/products/cat-carrier-bag.jpg', 5, (SELECT id FROM categories WHERE name='이동용품'), NOW(), NOW()),
+-- ('강아지 침대 대형', '편안한 수면을 위한 대형 강아지 침대입니다.', 75000.0, 95000.0, 21, '/images/products/dog-bed-large.jpg', 3, (SELECT id FROM categories WHERE name='침대'), NOW(), NOW()),
+-- ('고양이 스크래처', '고양이의 발톱 관리를 위한 다층 스크래처입니다.', 35000.0, NULL, NULL, '/images/products/cat-scratcher.jpg', 10, (SELECT id FROM categories WHERE name='장난감'), NOW(), NOW()),
+-- ('강아지 샴푸 500ml', '부드럽고 안전한 강아지 전용 샴푸입니다.', 12000.0, 15000.0, 20, '/images/products/dog-shampoo.jpg', 20, (SELECT id FROM categories WHERE name='위생용품'), NOW(), NOW()),
+-- ('고양이 사료 3kg', '영양 균형이 잘 맞춰진 고양이 전용 사료입니다.', 28000.0, 35000.0, 20, '/images/products/cat-food-nutrition.jpg', 18, (SELECT id FROM categories WHERE name='사료'), NOW(), NOW()),
+-- ('강아지 간식 1kg', '건강한 재료로 만든 강아지 간식입니다.', 15000.0, NULL, NULL, '/images/products/dog-treats.jpg', 25, (SELECT id FROM categories WHERE name='사료'), NOW(), NOW()),
+-- ('고양이 하우스', '고양이가 편안하게 쉴 수 있는 하우스입니다.', 45000.0, 60000.0, 25, '/images/products/cat-house.jpg', 7, (SELECT id FROM categories WHERE name='액세서리'), NOW(), NOW()),
+-- ('강아지 장난감 공', '내구성이 뛰어난 강아지 장난감 공입니다.', 8000.0, 12000.0, 33, '/images/products/dog-toy-ball.jpg', 30, (SELECT id FROM categories WHERE name='장난감'), NOW(), NOW()),
+-- ('고양이 브러시', '고양이 털빗질용 브러시입니다.', 5000.0, NULL, NULL, '/images/products/cat-brush.jpg', 15, (SELECT id FROM categories WHERE name='위생용품'), NOW(), NOW()),
+-- ('강아지 매트', '흡수력이 뛰어난 강아지 매트입니다.', 22000.0, 30000.0, 27, '/images/products/dog-mat.jpg', 12, (SELECT id FROM categories WHERE name='침대'), NOW(), NOW()),
+-- ('고양이 급식기', '고양이 급식용 자동 급식기입니다.', 65000.0, 80000.0, 19, '/images/products/cat-feeder.jpg', 4, (SELECT id FROM categories WHERE name='액세서리'), NOW(), NOW()),
+-- ('강아지 목걸이', '개성있는 강아지 목걸이입니다.', 12000.0, NULL, NULL, '/images/products/dog-collar.jpg', 20, (SELECT id FROM categories WHERE name='액세서리'), NOW(), NOW());
+
