@@ -14,9 +14,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.petmily.backend.service.OAuth2UserService;
-import com.petmily.backend.handler.OAuth2LoginSuccessHandler;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.HashMap;

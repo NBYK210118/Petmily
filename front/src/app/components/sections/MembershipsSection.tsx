@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 
 interface Plan {
   title: string
@@ -36,10 +36,10 @@ export default function MembershipsSection({
 }: MembershipsSectionProps) {
   const [selectedPlan, setSelectedPlan] = useState(defaultSelected)
 
-  const handlePlanSelect = (planTitle: string) => {
+  const handlePlanSelect = useCallback((planTitle: string) => {
     setSelectedPlan(planTitle)
     onPlanSelect?.(planTitle)
-  }
+  }, [onPlanSelect])
 
   return (
     <section className="py-12 md:py-20 bg-white">

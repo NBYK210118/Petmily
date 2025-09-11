@@ -1,6 +1,7 @@
 // app/page.tsx
 'use client'
 
+import { useCallback } from 'react'
 import Header from './components/header'
 import HeroSection from './components/sections/HeroSection'
 import ReviewsSection from './components/sections/ReviewsSection'
@@ -13,17 +14,17 @@ export default function Home() {
   const PETMILY_GRADIENT_OVERLAY =
   'linear-gradient(180deg, rgba(213,205,201,0.6) 15%, rgba(203,183,162,0.6) 50%, rgba(216,202,184,0.6) 90%)'
 
-  const handlePlanSelect = (planTitle: string) => {
+  const handlePlanSelect = useCallback((planTitle: string) => {
     console.log('Selected plan:', planTitle)
-  }
+  }, [])
 
-  const handleViewPricing = () => {
+  const handleViewPricing = useCallback(() => {
     window.location.href = '/pricing'
-  }
+  }, [])
 
-  const handleFreeTrial = () => {
+  const handleFreeTrial = useCallback(() => {
     window.location.href = '/register'
-  }
+  }, [])
 
   return (
     <main className='bg-[linear-gradient(180deg,#D5CDC9_15%,#CBB7A2_50%,#D8CAB8_90%)]'>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { Heart, ShoppingBag, Search, Filter, Star, ShoppingCart } from "lucide-react";
 import { productAPI } from "@/lib/api";
@@ -34,19 +34,15 @@ export default function MallPage() {
   const [showAiResults, setShowAiResults] = useState(false);
 
   // 상품 이미지 배열 (재사용 가능)
-  const productImages = [
+  const productImages = useMemo(() => [
     '/images/pet1.png',
     '/images/pet2.png', 
     '/images/pet3.png',
     '/images/tug1.png',
     '/images/user_ex.png'
-  ];
+  ], []);
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       const response = await productAPI.getAvailableProducts();
@@ -62,9 +58,13 @@ export default function MallPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [productImages]);
 
-  const handleSearch = async () => {
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+  const handleSearch = useCallback(async () => {
     if (!searchTerm.trim()) {
       // 검색어가 없으면 모든 상품 표시
       fetchProducts();
@@ -85,12 +85,12 @@ export default function MallPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm, fetchProducts, productImages]);
 
-  const addToCart = (product: Product) => {
+  const addToCart = useCallback((product: Product) => {
     setCart(prev => [...prev, product]);
     toast.success(`${product.name}이(가) 장바구니에 추가되었습니다.`);
-  };
+  }, []);
 
   const handleAiRecommendation = async () => {
     console.log('AI 추천 시작');

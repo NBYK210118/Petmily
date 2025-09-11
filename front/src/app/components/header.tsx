@@ -1,5 +1,6 @@
 'use client'
 
+import { useCallback } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useAuth } from '../contexts/AuthContext'
@@ -9,7 +10,7 @@ export default function Header() {
   const { isAuthenticated, user, loading, logout } = useAuth()
   const router = useRouter()
 
-  const handleGetToService = () => {
+  const handleGetToService = useCallback(() => {
     if (isAuthenticated) {
       // 로그인된 상태면 서비스 페이지로 이동 (mall 페이지)
       router.push('/mall')
@@ -17,12 +18,12 @@ export default function Header() {
       // 로그인되지 않은 상태면 로그인 페이지로 이동
       router.push('/login')
     }
-  }
+  }, [isAuthenticated, router])
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     logout()
     router.push('/')
-  }
+  }, [logout, router])
   return (
     <header className="w-full fixed top-0 left-0 z-60 bg-slate-300/50 backdrop-blur-md shadow-sm">
       <div className="max-w-[100rem] mx-auto py-4 flex items-center justify-between">

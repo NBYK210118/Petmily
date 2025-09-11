@@ -56,6 +56,7 @@ export const authAPI = {
 export const petAPI = {
   createPet: (petData: {
     name: string;
+    
     species: string;
     breed?: string;
     age: number;
