@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { authAPI } from "@/lib/api";
 import { useAuth } from "../contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import Modal from "../components/common/Modal";
 
 const registerSchema = z.object({
   name: z.string().min(2, "이름은 최소 2자 이상이어야 합니다"),
@@ -29,6 +30,17 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [modal, setModal] = useState<{
+    isOpen: boolean;
+    type: 'success' | 'error';
+    title: string;
+    message: string;
+  }>({
+    isOpen: false,
+    type: 'success',
+    title: '',
+    message: ''
+  });
   const { login, redirectAfterAuth } = useAuth();
   const router = useRouter();
 
@@ -67,13 +79,24 @@ export default function RegisterPage() {
         avatar: user.avatarUrl
       });
       
-      toast.success("회원가입이 완료되었습니다!");
+      // 성공 모달 표시
+      setModal({
+        isOpen: true,
+        type: 'success',
+        title: '회원가입 성공!',
+        message: `${user.name}님, 회원가입이 완료되었습니다!`
+      });
       
-      // 가장 최근 방문한 페이지로 리다이렉트
-      redirectAfterAuth(router);
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "회원가입에 실패했습니다. 다시 시도해주세요.";
-      toast.error(errorMessage);
+      const errorMessage = error.response?.data?.message || "회원가입에 실패했습니다.";
+      
+      // 에러 모달 표시
+      setModal({
+        isOpen: true,
+        type: 'error',
+        title: '회원가입 실패',
+        message: errorMessage
+      });
     } finally {
       setIsLoading(false);
     }
@@ -84,13 +107,35 @@ export default function RegisterPage() {
     window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`;
   };
 
+  const handleModalClose = () => {
+    setModal(prev => ({ ...prev, isOpen: false }));
+  };
+
+  const handleSuccessModalButton = () => {
+    setModal(prev => ({ ...prev, isOpen: false }));
+    // 홈페이지로 리다이렉트
+    router.push('/');
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-blue-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen relative">
+      {/* Fixed Background with Blur */}
+      <div 
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: 'url("/images/tug1.png")',
+          filter: 'blur(8px)',
+          transform: 'scale(1.1)',
+        }}
+      />
+      
+      {/* Content with backdrop */}
+      <div className="relative z-10 min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8 bg-white/80 backdrop-blur-sm rounded-xl shadow-xl p-8">
         <div>
           <div className="flex justify-center">
             <div className="flex items-center">
-              <Heart className="h-10 w-10 text-pink-500" />
+              <Heart className="h-10 w-10 text-[#C59172]" />
               <span className="ml-2 text-3xl font-bold text-gray-900">PetMily</span>
             </div>
           </div>
@@ -101,7 +146,7 @@ export default function RegisterPage() {
             또는{" "}
             <Link
               href="/login"
-              className="font-medium text-pink-600 hover:text-pink-500"
+                className="font-medium text-[#C59172] hover:text-[#B07A5C]"
             >
               기존 계정으로 로그인
             </Link>
@@ -118,7 +163,7 @@ export default function RegisterPage() {
                 {...register("name")}
                 type="text"
                 autoComplete="name"
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm"
+                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-[#C59172] focus:border-[#C59172] sm:text-sm"
                 placeholder="이름을 입력해주세요"
               />
               {errors.name && (
@@ -134,7 +179,7 @@ export default function RegisterPage() {
                 {...register("email")}
                 type="email"
                 autoComplete="email"
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm"
+                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-[#C59172] focus:border-[#C59172] sm:text-sm"
                 placeholder="이메일을 입력해주세요"
               />
               {errors.email && (
@@ -150,7 +195,7 @@ export default function RegisterPage() {
                 {...register("phone")}
                 type="tel"
                 autoComplete="tel"
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm"
+                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-[#C59172] focus:border-[#C59172] sm:text-sm"
                 placeholder="전화번호를 입력해주세요"
               />
               {errors.phone && (
@@ -167,7 +212,7 @@ export default function RegisterPage() {
                   {...register("password")}
                   type={showPassword ? "text" : "password"}
                   autoComplete="new-password"
-                  className="appearance-none relative block w-full px-3 py-2 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm"
+                  className="appearance-none relative block w-full px-3 py-2 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-[#C59172] focus:border-[#C59172] sm:text-sm"
                   placeholder="비밀번호를 입력해주세요"
                 />
                 <button
@@ -196,7 +241,7 @@ export default function RegisterPage() {
                   {...register("confirmPassword")}
                   type={showConfirmPassword ? "text" : "password"}
                   autoComplete="new-password"
-                  className="appearance-none relative block w-full px-3 py-2 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm"
+                  className="appearance-none relative block w-full px-3 py-2 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-[#C59172] focus:border-[#C59172] sm:text-sm"
                   placeholder="비밀번호를 다시 입력해주세요"
                 />
                 <button
@@ -222,14 +267,14 @@ export default function RegisterPage() {
               {...register("agreeTerms")}
               id="agreeTerms"
               type="checkbox"
-              className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
+              className="h-4 w-4 text-[#C59172] focus:ring-[#C59172] border-gray-300 rounded"
             />
             <label htmlFor="agreeTerms" className="ml-2 block text-sm text-gray-900">
-              <Link href="/terms" className="text-pink-600 hover:text-pink-500">
+              <Link href="/terms" className="text-[#C59172] hover:text-pink-500">
                 이용약관
               </Link>{" "}
               및{" "}
-              <Link href="/privacy" className="text-pink-600 hover:text-pink-500">
+              <Link href="/privacy" className="text-[#C59172] hover:text-pink-500">
                 개인정보처리방침
               </Link>에 동의합니다
             </label>
@@ -242,7 +287,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#C59172] hover:bg-[#B07A5C] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#C59172] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {isLoading ? "가입 중..." : "회원가입"}
             </button>
@@ -264,7 +309,7 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={() => handleOAuthLogin('google')}
-                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors duration-200"
+                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors duration-200 cursor-pointer"
               >
                 <svg className="h-5 w-5" viewBox="0 0 24 24">
                   <path
@@ -290,7 +335,7 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={() => handleOAuthLogin('facebook')}
-                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors duration-200"
+                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors duration-200 cursor-pointer"
               >
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
@@ -300,7 +345,21 @@ export default function RegisterPage() {
             </div>
           </div>
         </form>
+        </div>
       </div>
+      
+      {/* Modal */}
+      <Modal
+        isOpen={modal.isOpen}
+        onClose={handleModalClose}
+        type={modal.type}
+        title={modal.title}
+        message={modal.message}
+        buttonText={modal.type === 'success' ? '홈으로 이동' : '확인'}
+        onButtonClick={modal.type === 'success' ? handleSuccessModalButton : undefined}
+        autoClose={modal.type === 'success'}
+        autoCloseDelay={3000}
+      />
     </div>
   );
 }

@@ -110,13 +110,13 @@ export default function MembershipsSection({
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button 
-            className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 transition font-medium"
+            className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 transition font-medium cursor-pointer hover:scale-105 transform duration-200"
             onClick={onViewPricing}
           >
             자세한 가격 보기
           </button>
           <button 
-            className="bg-transparent text-black border-2 border-black px-8 py-3 rounded-lg hover:bg-black hover:text-white transition font-medium"
+            className="bg-transparent text-black border-2 border-black px-8 py-3 rounded-lg hover:bg-black hover:text-white transition font-medium cursor-pointer hover:scale-105 transform duration-200"
             onClick={onFreeTrial}
           >
             14일 무료 체험

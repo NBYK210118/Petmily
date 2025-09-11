@@ -1,12 +1,24 @@
 'use client'
 
+import { useCallback } from 'react'
 import Image from 'next/image'
 import { ArrowRight, CheckCircle, Star, Users, Clock, Shield } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import CommonLayout from '../components/common/CommonLayout'
 import Footer from '../components/sections/Footer'
 import Header from '../components/header'
 
 export default function HowItWorksPage() {
+  const router = useRouter()
+
+  const handleStartFree = useCallback(() => {
+    router.push('/register')
+  }, [router])
+
+  const handleLearnMore = useCallback(() => {
+    router.push('/features')
+  }, [router])
+
   const steps = [
     {
       number: 1,
@@ -162,10 +174,16 @@ export default function HowItWorksPage() {
             반려동물과의 특별한 순간을 PetMily와 함께 만들어가세요
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-white text-[#C59172] px-8 py-3 rounded-lg hover:bg-gray-100 font-medium text-lg transition">
+            <button 
+              onClick={handleStartFree}
+              className="bg-white text-[#C59172] px-8 py-3 rounded-lg hover:bg-gray-100 font-medium text-lg transition cursor-pointer hover:scale-105 transform duration-200"
+            >
               무료로 시작하기
             </button>
-            <button className="bg-transparent text-white border-2 border-white px-8 py-3 rounded-lg hover:bg-white hover:text-[#C59172] font-medium text-lg transition">
+            <button 
+              onClick={handleLearnMore}
+              className="bg-transparent text-white border-2 border-white px-8 py-3 rounded-lg hover:bg-white hover:text-[#C59172] font-medium text-lg transition cursor-pointer hover:scale-105 transform duration-200"
+            >
               더 알아보기
             </button>
           </div>

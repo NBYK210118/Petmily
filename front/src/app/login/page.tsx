@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { authAPI } from "@/lib/api";
 import { useAuth } from "../contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import Modal from "../components/common/Modal";
 
 const loginSchema = z.object({
   email: z.string().email("올바른 이메일을 입력해주세요"),
@@ -21,6 +22,17 @@ type LoginForm = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [modal, setModal] = useState<{
+    isOpen: boolean;
+    type: 'success' | 'error';
+    title: string;
+    message: string;
+  }>({
+    isOpen: false,
+    type: 'success',
+    title: '',
+    message: ''
+  });
   const { login, redirectAfterAuth } = useAuth();
   const router = useRouter();
 
@@ -49,13 +61,32 @@ export default function LoginPage() {
         avatar: user.avatarUrl
       });
       
-      toast.success("로그인 성공!");
+      // 성공 모달 표시
+      setModal({
+        isOpen: true,
+        type: 'success',
+        title: '로그인 성공!',
+        message: `${user.name}님, 환영합니다!`
+      });
       
-      // 가장 최근 방문한 페이지로 리다이렉트
-      redirectAfterAuth(router);
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "로그인에 실패했습니다. 다시 시도해주세요.";
-      toast.error(errorMessage);
+      const errorMessage = error.response?.data?.message || "로그인에 실패했습니다.";
+      
+      // 에러 타입에 따른 메시지 분류
+      let displayMessage = errorMessage;
+      if (errorMessage.includes('비밀번호') || errorMessage.includes('password')) {
+        displayMessage = '잘못된 비밀번호입니다.';
+      } else if (errorMessage.includes('이메일') || errorMessage.includes('email') || errorMessage.includes('User not found')) {
+        displayMessage = '존재하지 않는 이메일입니다.';
+      }
+      
+      // 에러 모달 표시
+      setModal({
+        isOpen: true,
+        type: 'error',
+        title: '로그인 실패',
+        message: displayMessage
+      });
     } finally {
       setIsLoading(false);
     }
@@ -66,29 +97,51 @@ export default function LoginPage() {
     window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`;
   };
 
+  const handleModalClose = () => {
+    setModal(prev => ({ ...prev, isOpen: false }));
+  };
+
+  const handleSuccessModalButton = () => {
+    setModal(prev => ({ ...prev, isOpen: false }));
+    // 홈페이지로 리다이렉트
+    router.push('/');
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-blue-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <div className="flex justify-center">
-            <div className="flex items-center">
-              <Heart className="h-10 w-10 text-pink-500" />
-              <span className="ml-2 text-3xl font-bold text-gray-900">PetMily</span>
+    <div className="min-h-screen relative">
+      {/* Fixed Background with Blur */}
+      <div 
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: 'url("/images/tug1.png")',
+          filter: 'blur(8px)',
+          transform: 'scale(1.1)',
+        }}
+      />
+      
+      {/* Content with backdrop */}
+      <div className="relative z-10 min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8 bg-white/80 backdrop-blur-sm rounded-xl shadow-xl p-8">
+          <div>
+            <div className="flex justify-center">
+              <div className="flex items-center">
+                <Heart className="h-10 w-10 text-[#C59172]" />
+                <span className="ml-2 text-3xl font-bold text-gray-900">PetMily</span>
+              </div>
             </div>
+            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+              로그인
+            </h2>
+            <p className="mt-2 text-center text-sm text-gray-600">
+              또는{" "}
+              <Link
+                href="/register"
+                className="font-medium text-[#C59172] hover:text-[#B07A5C]"
+              >
+                새 계정 만들기
+              </Link>
+            </p>
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            로그인
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            또는{" "}
-            <Link
-              href="/register"
-              className="font-medium text-pink-600 hover:text-pink-500"
-            >
-              새 계정 만들기
-            </Link>
-          </p>
-        </div>
         
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="rounded-md shadow-sm -space-y-px">
@@ -100,7 +153,7 @@ export default function LoginPage() {
                 {...register("email")}
                 type="email"
                 autoComplete="email"
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-pink-500 focus:border-pink-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-[#C59172] focus:border-[#C59172] focus:z-10 sm:text-sm"
                 placeholder="이메일 주소"
               />
               {errors.email && (
@@ -115,7 +168,7 @@ export default function LoginPage() {
                 {...register("password")}
                 type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
-                className="appearance-none rounded-none relative block w-full px-3 py-2 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-pink-500 focus:border-pink-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-[#C59172] focus:border-[#C59172] focus:z-10 sm:text-sm"
                 placeholder="비밀번호"
               />
               <button
@@ -141,7 +194,7 @@ export default function LoginPage() {
                 id="remember-me"
                 name="remember-me"
                 type="checkbox"
-                className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
+                className="h-4 w-4 text-[#C59172] focus:ring-[#C59172] border-gray-300 rounded"
               />
               <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
                 로그인 상태 유지
@@ -151,7 +204,7 @@ export default function LoginPage() {
             <div className="text-sm">
               <Link
                 href="/forgot-password"
-                className="font-medium text-pink-600 hover:text-pink-500"
+                className="font-medium text-[#C59172] hover:text-[#B07A5C]"
               >
                 비밀번호를 잊으셨나요?
               </Link>
@@ -162,7 +215,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#C59172] hover:bg-[#B07A5C] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#C59172] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {isLoading ? "로그인 중..." : "로그인"}
             </button>
@@ -184,7 +237,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => handleOAuthLogin('google')}
-                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors duration-200"
+                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors duration-200 cursor-pointer"
               >
                 <svg className="h-5 w-5" viewBox="0 0 24 24">
                   <path
@@ -210,7 +263,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => handleOAuthLogin('facebook')}
-                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors duration-200"
+                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors duration-200 cursor-pointer"
               >
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
@@ -220,7 +273,21 @@ export default function LoginPage() {
             </div>
           </div>
         </form>
+        </div>
       </div>
+      
+      {/* Modal */}
+      <Modal
+        isOpen={modal.isOpen}
+        onClose={handleModalClose}
+        type={modal.type}
+        title={modal.title}
+        message={modal.message}
+        buttonText={modal.type === 'success' ? '홈으로 이동' : '확인'}
+        onButtonClick={modal.type === 'success' ? handleSuccessModalButton : undefined}
+        autoClose={modal.type === 'success'}
+        autoCloseDelay={3000}
+      />
     </div>
   );
 }
